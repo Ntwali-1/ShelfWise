@@ -2,24 +2,28 @@ import { Injectable, UnauthorizedException, NotFoundException } from "@nestjs/co
 import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
+import { MailerService } from "src/mailer/mailer.service";
 
 @Injectable()
 export class UsersService {
 
-  constructor(private prisma: PrismaService, private jwt: JwtService) {}
+  constructor(private prisma: PrismaService, private jwt: JwtService, private mailerService: MailerService) {}
 
   async createUser(createUserDto: any) {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    return this.prisma.user.create({
+    
+    const user =  this.prisma.user.create({
       data: {
         otp: otp,
         otpExpiration: new Date(Date.now() + 10 * 60 * 1000),
-        name: createUserDto.name,
         email: createUserDto.email,
         password: hashedPassword,
       }
     });  
+
+    await this.mailerService.sendOtpMail(createUserDto.email, otp);
+    return user;
   }
 
   async verifyUser(createUserDto: any) {
@@ -40,6 +44,7 @@ export class UsersService {
           otpExpiration: null,
         }
       });
+      
       return { message: "User verified successfully" };
     }
   }

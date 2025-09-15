@@ -10,8 +10,20 @@ generator client {
 model User {
   id            Int       @id @default(autoincrement())
   email         String    @unique
-  name          String?
   password      String
   otp           String?
   otpExpiration DateTime?
+  Profile       Profile?
+}
+
+model Profile {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+  firstName   String
+  lastName    String
+  birthday    DateTime
+  bio         String?
+  address     String?
+  phoneNumber String?
 }

@@ -1,24 +1,27 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
+import { CreateProfileDto } from "./dto/create-profile.dto";
 
 @Injectable()
 export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
-  async createProfile(data: any, userId: number) {
+  async createProfile(createProfileDto: CreateProfileDto, userId: number) {
     const profile = await this.prisma.profile.create({
       data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        birthday: data.birthday,
-        bio: data.bio,
-        address: data.address,
-        phoneNumber: data.phoneNumber,
+        firstName: createProfileDto.firstName,
+        lastName: createProfileDto.lastName,
+        birthday: createProfileDto.birthday
+          ? new Date(createProfileDto.birthday)
+          : undefined,
+        bio: createProfileDto.bio ?? null,
+        address: createProfileDto.address ?? null,
+        phoneNumber: createProfileDto.phoneNumber ?? null,
         user: {
-        connect: { id: userId }, 
+          connect: { id: userId },
+        },
       },
-      }
-    })
+    });
     return { profile };
   }
 
@@ -28,17 +31,17 @@ export class ProfileService {
     });
   }
 
-  async updateProfile(data: any, userId: number) {
+  async updateProfile(data: Partial<CreateProfileDto>, userId: number) {
     return this.prisma.profile.update({
       where: { userId: userId },
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        birthday: data.birthday,
+        birthday: data?.birthday ? new Date(data.birthday) : undefined,
         bio: data.bio,
         address: data.address,
         phoneNumber: data.phoneNumber,
-      }
+      },
     });
   }
 }

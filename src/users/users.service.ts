@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { MailerService } from "src/mailer/mailer.service";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -26,19 +27,19 @@ export class UsersService {
     return user;
   }
 
-  async verifyUser(createUserDto: any) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email }
+  async verifyUser(verifyUserDto: any) {
+    const user = await this.prisma.user.findFirst({
+      where: { email: verifyUserDto.email }
     });
     if (!user) {
       throw new Error("User not found");
-    }else if (user.otp !== createUserDto.otp) {
+    }else if (user.otp !== verifyUserDto.otp) {
       throw new Error("Invalid OTP");
     }else if (!user.otpExpiration || user.otpExpiration < new Date()) {
       throw new Error("OTP expired");
     }else{
       await this.prisma.user.update({
-        where: { email: createUserDto.email },
+        where: { email: verifyUserDto.email },
         data: {
           otp: null,
           otpExpiration: null,
@@ -63,7 +64,7 @@ export class UsersService {
       throw new UnauthorizedException("Invalid password");
     }
     
-    const payload = { sub: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email };
     const token = this.jwt.sign(payload);
     return { token };
   }

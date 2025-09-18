@@ -2,7 +2,9 @@ import { Controller, Post, Body, Request, UseGuards, Get, Patch} from "@nestjs/c
 import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 import { AuthGuard } from "@nestjs/passport";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth()
 @Controller('profile')
 
 export class ProfileController {
@@ -10,9 +12,9 @@ export class ProfileController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  async createProfile(@Body() data: CreateProfileDto, @Request() req) {
+  async createProfile(@Body() createProfil: CreateProfileDto, @Request() req) {
     const userId = req.user.id;
-    return this.profileService.createProfile(data, userId);
+    return this.profileService.createProfile(createProfil, userId);
   }
 
   @UseGuards(AuthGuard('jwt'))

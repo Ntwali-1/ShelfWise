@@ -22,7 +22,7 @@ model Profile {
   user        User     @relation(fields: [userId], references: [id])
   firstName   String
   lastName    String
-  birthday    DateTime
+  birthday    DateTime?
   bio         String?
   address     String?
   phoneNumber String?

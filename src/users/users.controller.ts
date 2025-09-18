@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/commo
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";  
+import { VerifyUserDto } from "./dto/verify-user.dto";
 
 @Controller('users')
 export class UsersController {
@@ -13,8 +14,8 @@ export class UsersController {
   }
 
   @Post('verify')
-  async verifyUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.verifyUser(createUserDto);
+  async verifyUser(@Body() verifyUserDto: VerifyUserDto) {
+    return this.usersService.verifyUser(verifyUserDto);
   }
 
   @Post('login')

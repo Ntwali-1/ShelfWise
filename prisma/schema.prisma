@@ -17,13 +17,25 @@ model User {
 }
 
 model Profile {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @unique
-  user        User     @relation(fields: [userId], references: [id])
+  id          Int       @id @default(autoincrement())
+  userId      Int       @unique
+  user        User      @relation(fields: [userId], references: [id])
   firstName   String
   lastName    String
   birthday    DateTime?
   bio         String?
   address     String?
   phoneNumber String?
+}
+
+model Product {
+  id          String   @id
+  name        String
+  description String?
+  price       Float
+  quantity    Int      @default(0)
+  sku         String   @unique
+  category    String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
 }

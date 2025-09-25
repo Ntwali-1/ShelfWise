@@ -3,7 +3,6 @@ import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { MailerService } from "src/mailer/mailer.service";
-import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -24,7 +23,9 @@ export class UsersService {
     });  
 
     await this.mailerService.sendOtpMail(createUserDto.email, otp);
-    return user;
+
+    const token = this.jwt.sign({ email: (await user).email, id: (await user).id });
+    return {user, token};
   }
 
   async verifyUser(verifyUserDto: any) {

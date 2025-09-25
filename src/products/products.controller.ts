@@ -1,8 +1,9 @@
-import { Body, Get, Post } from "@nestjs/common";
+import { Body, Get, Post, Patch } from "@nestjs/common";
 import { Controller } from "@nestjs/common";
 import { ProductService } from "./products.service";
 import { ProductDto } from "./dto/add-product.dto";
 import { ApiBearerAuth } from "@nestjs/swagger";
+import { InventoryDto } from "./dto/inventory.dto";
 
 @ApiBearerAuth()
 @Controller('products')
@@ -23,6 +24,11 @@ export class ProductController {
   @Post('add')
   async addProduct(@Body() productDto: ProductDto) {
     return this.productService.addProduct(productDto);
+  }
+
+  @Patch(':id/inventory/reduce')
+  async reduceProductQuantity(@Body('id') id: string, @Body() inventoryDto: InventoryDto) {
+    return this.productService.reduceProductQuantity(id, inventoryDto);
   }
 
 }

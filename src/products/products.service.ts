@@ -2,11 +2,15 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaClient } from "@prisma/client";
 import { InventoryDto } from "./dto/inventory.dto";
+import { ProductGateway } from "./product.gateway";
 
 @Injectable()
 export class ProductService {
 
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: PrismaClient, 
+    private gateway: ProductGateway
+  ){}
    
   async getAllProducts() {
     return this.prisma.product.findMany();
@@ -41,7 +45,11 @@ export class ProductService {
         where: { id },
         data: { quantity: newQuantity }
       });
+
+      const notify = this.gateway.server.emit('productUpdated', { id, newQuantity } );
     }
+
+
   }
 
   async increaseProductQuantity(id: string, inventoryDto: InventoryDto) {

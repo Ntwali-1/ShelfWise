@@ -1,16 +1,13 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { Server } from "socket.io";
 
 @WebSocketGateway()
 export class ProductGateway {
   @WebSocketServer()
-  server;
+  server: Server;
 
-  @SubscribeMessage('updateProduct')
-  handleMessage(client: any, payload: any): string {
-    return 'Message received';
-  }
-
-  notifyProductUpdate(product: any) {
-    this.server.emit('productUpdated', product);
+  @SubscribeMessage('updatedProduct')
+  handleUpdatedProduct(client: any, payload: any){
+    return { event: 'updatedProduct', data: payload  };
   }
 }

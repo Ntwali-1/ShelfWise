@@ -24,7 +24,7 @@ export class UsersService {
 
     await this.mailerService.sendOtpMail(createUserDto.email, otp);
 
-    const token = this.jwt.sign({ email: (await user).email, id: (await user).id });
+    const token = this.jwt.sign({ email: (await user).email, id: (await user).id, role: (await user).role });
     return {user, token};
   }
 
@@ -65,7 +65,7 @@ export class UsersService {
       throw new UnauthorizedException("Invalid password");
     }
     
-    const payload = { id: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email, role: user.role };
     const token = this.jwt.sign(payload);
     return { token };
   }

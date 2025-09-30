@@ -7,7 +7,8 @@ export class ProductGateway {
   server: Server;
 
   @SubscribeMessage('updatedProduct')
+  
   handleUpdatedProduct(client: any, payload: any){
-    return { event: 'updatedProduct', data: payload  };
+    return { event: 'productUpdated', data: payload  };
   }
 }

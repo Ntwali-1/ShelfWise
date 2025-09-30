@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty } from "class-validator";
+import { Role } from "../../rbac/role.enum";
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -10,4 +11,9 @@ export class CreateUserDto {
   @ApiProperty({ example: 'strongPassword123', description: 'User password' })
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({ example: 'client', enum: Role, description: 'User role' })
+  @IsNotEmpty()
+  @IsEnum(Role)
+  role: Role;
 }

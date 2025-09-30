@@ -1,15 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { v4 as uuidv4 } from 'uuid';
-import { PrismaClient } from "@prisma/client";
 import { InventoryDto } from "./dto/inventory.dto";
 import { ProductGateway } from "./product.gateway";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ProductService {
 
   constructor(
-    private prisma: PrismaClient, 
-    private gateway: ProductGateway
+    private prisma: PrismaService, 
+    private gateway: ProductGateway,
   ){}
    
   async getAllProducts() {
@@ -22,8 +21,14 @@ export class ProductService {
 
   async addProduct(productDto: any) {
     const newProduct = {
-      id: uuidv4(),
-      ...productDto
+      id: Math.random().toString(36).substring(2, 15),
+      name: productDto.name,
+      description: productDto.description,
+      price: productDto.price,
+      category: productDto.category,
+      quantity: productDto.quantity,
+      sku: productDto.sku,
+      imageUrl: productDto.imageUrl
     };
     return this.prisma.product.create({ data: newProduct });
   }
@@ -35,18 +40,21 @@ export class ProductService {
       throw new Error('Product not found');
     }
     const newQuantity = product.quantity - inventoryDto.quantity;
+    const change = inventoryDto.quantity;
 
     if (newQuantity < 0) {
       throw new Error('Insufficient product quantity');
     }else if (newQuantity === 0) {
       return { message: 'Product quantity reduced to zero' };
     }else{
-      return this.prisma.product.update({
+      const updatedProduct = this.prisma.product.update({
         where: { id },
         data: { quantity: newQuantity }
       });
 
-      const notify = this.gateway.server.emit('productUpdated', { id, newQuantity } );
+      this.gateway.server.emit('productUpdated', { id, newQuantity, change} );
+
+      return updatedProduct;
     }
 
 
@@ -57,10 +65,16 @@ export class ProductService {
     if (!product) {
       throw new Error('Product not found');
     }
+
     const newQuantity = product.quantity + inventoryDto.quantity;
-    return this.prisma.product.update({
+    const change = inventoryDto.quantity;
+
+    const updatedProduct =  this.prisma.product.update({
       where: { id },
       data: { quantity: newQuantity }
     });
+
+    this.gateway.server.emit('productUpdated', { id, newQuantity, change} );
+    return updatedProduct;
   }
 }

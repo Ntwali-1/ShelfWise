@@ -9,11 +9,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('Chat App API Documentation')
-    .setDescription('My chat app endpoints documentation')
+    .setTitle('ShelfWise')
+    .setDescription('My store management system endpoints documentation')
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('chat-app')
+    .addTag('ShelfWise')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

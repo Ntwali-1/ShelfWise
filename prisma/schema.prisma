@@ -20,6 +20,7 @@ model User {
   otp           String?
   otpExpiration DateTime?
   Profile       Profile?
+  Order         Order[]
 }
 
 model Profile {
@@ -44,14 +45,12 @@ model Product {
   category    String
   imageUrl    String?
   createdAt   DateTime @default(now())
-  order       Order[]
 }
 
 model Order {
   id          String  @id
-  productId   String
-  productName String
-  quantity    Int
+  userId      Int @unique
+  user        User    @relation(fields: [userId], references: [id])
   address     String
-  product     Product @relation(fields: [productId], references: [id])
 }
+

@@ -11,14 +11,14 @@ import { AuthGuard } from "@nestjs/passport";
 
 
 @ApiBearerAuth()
+@Roles(Role.Admin)
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('products')
 export class ProductController {
 
   constructor(private readonly productService: ProductService) {}
 
   @Get('all')
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
   async getAllProducts() {
     return this.productService.getAllProducts();
   }
@@ -33,7 +33,7 @@ export class ProductController {
     return this.productService.addProduct(productDto);
   }
 
-  @Patch(':id/inventory/reduce')
+  /*@Patch(':id/inventory/reduce')
   async reduceProductQuantity(@Body('id') id: string, @Body() inventoryDto: InventoryDto) {
     return this.productService.reduceProductQuantity(id, inventoryDto);
   }
@@ -41,6 +41,6 @@ export class ProductController {
   @Patch(':id/inventory/increase')
   async increaseProductQuantity(@Body('id') id: string, @Body() inventoryDto: InventoryDto) {
     return this.productService.increaseProductQuantity(id, inventoryDto);
-  }
+  }*/
 
 }

@@ -44,4 +44,14 @@ model Product {
   category    String
   imageUrl    String?
   createdAt   DateTime @default(now())
+  order       Order[]
+}
+
+model Order {
+  id          String  @id
+  productId   String
+  productName String
+  quantity    Int
+  address     String
+  product     Product @relation(fields: [productId], references: [id])
 }

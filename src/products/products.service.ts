@@ -33,7 +33,7 @@ export class ProductService {
     return this.prisma.product.create({ data: newProduct });
   }
 
-  async reduceProductQuantity(id: string, inventoryDto: any) {
+  /*async reduceProductQuantity(id: string, inventoryDto: any) {
     const product = await this.prisma.product.findUnique({ where: { id } }); 
 
     if (!product) {
@@ -76,5 +76,5 @@ export class ProductService {
 
     this.gateway.server.emit('productUpdated', { id, newQuantity, change} );
     return updatedProduct;
-  }
+  }*/
 }

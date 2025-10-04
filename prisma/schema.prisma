@@ -48,9 +48,8 @@ model Product {
 }
 
 model Order {
-  id          String  @id
-  userId      Int @unique
-  user        User    @relation(fields: [userId], references: [id])
-  address     String
+  id      String @id
+  userId  Int    @unique
+  user    User   @relation(fields: [userId], references: [id])
+  address String
 }
-

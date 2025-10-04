@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 
+//Crud Operations
+
 @Injectable()
 export class ProfileService {
   constructor(private prisma: PrismaService) {}

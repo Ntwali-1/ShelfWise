@@ -29,7 +29,7 @@ export class ProfileService {
 
   async getProfile(userId: number) {
     return this.prisma.profile.findUnique({
-      where: { userId: userId },
+      where: { userId: userId 
     });
   }
 

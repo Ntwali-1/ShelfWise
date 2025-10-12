@@ -11,7 +11,7 @@ export class MailerService {
       service:"gmail",
       auth: {
         user: process.env.EMAILUSER,
-        pass: process.env.EMAILPASS
+        pass: process.env.EMAILPASgit add
       }
     });
 

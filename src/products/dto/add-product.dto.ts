@@ -13,9 +13,9 @@ export class ProductDto {
   @IsNotEmpty()
   price: number;
   
-  @ApiProperty({ example: 'electronics' } )
+  @ApiProperty({ example: 1 } )
   @IsNotEmpty()
-  category: string;
+  categoryId: number;
 
   @ApiProperty({ example: 50 } )
   @IsNotEmpty()

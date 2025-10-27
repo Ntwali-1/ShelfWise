@@ -8,9 +8,25 @@ import { ProfileModule } from './profiles/profile.module';
 import { ProductModule } from './products/products.module';
 import { PrismaClient } from '@prisma/client';
 import { OrderModule } from './orders/orders.module';
+import { CategoriesModule } from './categories/categories.module';
+import { CartModule } from './cart/cart.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
-  imports: [UsersModule, ProfileModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), ProductModule, PrismaClient, OrderModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UsersModule,
+    ProfileModule,
+    AuthModule,
+    ProductModule,
+    CategoriesModule,
+    CartModule,
+    OrderModule,
+    WishlistModule,
+    ReviewsModule,
+    PrismaClient
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

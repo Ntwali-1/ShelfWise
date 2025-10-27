@@ -1,33 +1,35 @@
-import { Controller, Post, Body, Request, UseGuards, Get, Patch} from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Get, Patch } from "@nestjs/common";
 import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { AuthGuard } from "@nestjs/passport";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { CurrentUser } from "src/decorators/user.decorator";
 
+@ApiTags('profile')
 @ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('profile')
-
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  async createProfile(@Body() createProfil: CreateProfileDto, @Request() req) {
-    const userId = req.user.id;
-    return this.profileService.createProfile(createProfil, userId);
+  async createProfile(@CurrentUser() user: any, @Body() createProfile: CreateProfileDto) {
+    return this.profileService.createProfile(createProfile, user.id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async getProfile(@Request() req) {
-    const userId = req.user.id;
-    return this.profileService.getProfile(userId);
+  async getProfile(@CurrentUser() user: any) {
+    return this.profileService.getProfile(user.id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Patch('update')
-  async updateProfile(@Body() data: any, @Request() req) {
-    const userId = req.user.id;
-    return this.profileService.updateProfile(data, userId);
+  @Patch('me')
+  async updateProfile(@CurrentUser() user: any, @Body() updateDto: UpdateProfileDto) {
+    return this.profileService.updateProfile(updateDto, user.id);
+  }
+
+  @Post('avatar')
+  async updateAvatar(@CurrentUser() user: any, @Body('avatarUrl') avatarUrl: string) {
+    return this.profileService.updateAvatar(user.id, avatarUrl);
   }
 }

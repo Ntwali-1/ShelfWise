@@ -12,15 +12,26 @@ enum Role {
   admin
 }
 
+enum OrderStatus {
+  pending
+  processing
+  shipped
+  delivered
+  cancelled
+}
+
 model User {
-  id            Int       @id @default(autoincrement())
-  email         String    @unique
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
   password      String
-  role          Role      @default(client)
+  role          Role       @default(client)
   otp           String?
   otpExpiration DateTime?
   Profile       Profile?
   Order         Order[]
+  Cart          Cart?
+  Wishlist      Wishlist[]
+  Review        Review[]
 }
 
 model Profile {
@@ -33,23 +44,99 @@ model Profile {
   bio         String?
   address     String?
   phoneNumber String?
+  avatarUrl   String?
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  Product   Product[]
 }
 
 model Product {
-  id          String   @id
+  id          String     @id
   name        String
   description String?
   price       Float
-  quantity    Int      @default(0)
-  sku         String   @unique
-  category    String
+  quantity    Int        @default(0)
+  sku         String     @unique
+  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
   imageUrl    String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime   @default(now())
+  CartItem    CartItem[]
+  OrderItem   OrderItem[]
+  Wishlist    Wishlist[]
+  Review      Review[]
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id])
+  CartItem  CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@unique([cartId, productId])
 }
 
 model Order {
-  id      String @id
-  userId  Int    @unique
-  user    User   @relation(fields: [userId], references: [id])
-  address String
+  id         String      @id
+  userId     Int
+  user       User        @relation(fields: [userId], references: [id])
+  address    String
+  status     OrderStatus @default(pending)
+  totalPrice Float
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  OrderItem  OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+
+  @@unique([orderId, productId])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
 }

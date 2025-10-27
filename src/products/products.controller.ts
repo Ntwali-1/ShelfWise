@@ -1,46 +1,66 @@
-import { Body, Get, Post, Patch, UseGuards } from "@nestjs/common";
+import { Body, Get, Post, Patch, Delete, UseGuards, Query, Param } from "@nestjs/common";
 import { Controller } from "@nestjs/common";
 import { ProductService } from "./products.service";
 import { ProductDto } from "./dto/add-product.dto";
-import { ApiBearerAuth } from "@nestjs/swagger";
-import { InventoryDto } from "./dto/inventory.dto";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/rbac/role.decorator";
 import { Role } from "src/rbac/role.enum";
 import { RolesGuard } from "src/rbac/role.guard";
 import { AuthGuard } from "@nestjs/passport";
+import { QueryProductsDto } from "./dto/query-products.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { UpdateStockDto } from "./dto/update-stock.dto";
 
-
-@ApiBearerAuth()
-@Roles(Role.Admin)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@ApiTags('products')
 @Controller('products')
 export class ProductController {
 
   constructor(private readonly productService: ProductService) {}
 
-  @Get('all')
-  async getAllProducts() {
-    return this.productService.getAllProducts();
+  @Get()
+  async getAllProducts(@Query() queryDto: QueryProductsDto) {
+    return this.productService.getAllProducts(queryDto);
+  }
+
+  @Get('search')
+  async searchProducts(@Query('q') query: string) {
+    return this.productService.searchProducts(query);
   }
 
   @Get(':id')
-  async getProductById(@Body('id') id: string) {
+  async getProductById(@Param('id') id: string) {
     return this.productService.getProductById(id);
   }
 
-  @Post('add')
+  @ApiBearerAuth()
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post()
   async addProduct(@Body() productDto: ProductDto) {
     return this.productService.addProduct(productDto);
   }
 
-  /*@Patch(':id/inventory/reduce')
-  async reduceProductQuantity(@Body('id') id: string, @Body() inventoryDto: InventoryDto) {
-    return this.productService.reduceProductQuantity(id, inventoryDto);
+  @ApiBearerAuth()
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Patch(':id')
+  async updateProduct(@Param('id') id: string, @Body() updateDto: UpdateProductDto) {
+    return this.productService.updateProduct(id, updateDto);
   }
 
-  @Patch(':id/inventory/increase')
-  async increaseProductQuantity(@Body('id') id: string, @Body() inventoryDto: InventoryDto) {
-    return this.productService.increaseProductQuantity(id, inventoryDto);
-  }*/
+  @ApiBearerAuth()
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Patch(':id/stock')
+  async updateStock(@Param('id') id: string, @Body() stockDto: UpdateStockDto) {
+    return this.productService.updateStock(id, stockDto);
+  }
 
+  @ApiBearerAuth()
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete(':id')
+  async deleteProduct(@Param('id') id: string) {
+    return this.productService.deleteProduct(id);
+  }
 }

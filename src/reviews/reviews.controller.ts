@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Delete, UseGuards, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Put, Delete, UseGuards, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
@@ -12,7 +12,7 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('clerk'))
   @Post('products/:productId')
   async createReview(
     @CurrentUser() user: any,
@@ -28,8 +28,8 @@ export class ReviewsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
-  @Patch(':reviewId')
+  @UseGuards(AuthGuard('clerk'))
+  @Put(':reviewId')
   async updateReview(
     @CurrentUser() user: any,
     @Param('reviewId', ParseIntPipe) reviewId: number,
@@ -39,7 +39,7 @@ export class ReviewsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('clerk'))
   @Delete(':reviewId')
   async deleteReview(
     @CurrentUser() user: any,

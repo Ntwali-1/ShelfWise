@@ -47,5 +47,23 @@ export class CategoriesService {
       data: createCategoryDto
     });
   }
+
+  async deleteCategory(id: number) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+      include: { _count: { select: { Product: true } } }
+    });
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    if (category._count.Product > 0) {
+      throw new ConflictException('Cannot delete category with existing products');
+    }
+
+    await this.prisma.category.delete({ where: { id } });
+    return { message: 'Category deleted successfully' };
+  }
 }
 

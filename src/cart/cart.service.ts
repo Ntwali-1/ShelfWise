@@ -124,6 +124,8 @@ export class CartService {
         where: { cartId: cart.id }
       });
     }
+
+    return { message: 'Cart cleared successfully' };
   }
 }
 

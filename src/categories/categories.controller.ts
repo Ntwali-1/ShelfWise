@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -24,10 +24,18 @@ export class CategoriesController {
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('clerk'), RolesGuard)
   @Post()
   async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.createCategory(createCategoryDto);
+  }
+
+  @ApiBearerAuth()
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard('clerk'), RolesGuard)
+  @Delete(':id')
+  async deleteCategory(@Param('id', ParseIntPipe) id: number) {
+    return this.categoriesService.deleteCategory(id);
   }
 }
 

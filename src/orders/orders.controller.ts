@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, UseGuards, Body, Param, Query } from "@nestjs/common";
+import { Controller, Post, Get, Patch, Put, UseGuards, Body, Param, Query } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/rbac/role.decorator";
@@ -11,7 +11,7 @@ import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 
 @ApiTags('orders')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('clerk'))
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
@@ -19,14 +19,14 @@ export class OrdersController {
   // Client endpoints
   @Roles(Role.Client)
   @UseGuards(RolesGuard)
-  @Post('create')
+  @Post()
   async createOrder(@CurrentUser() user: any, @Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.createOrder(user.id, createOrderDto);
   }
 
   @Roles(Role.Client)
   @UseGuards(RolesGuard)
-  @Get('my-orders')
+  @Get()
   async getMyOrders(@CurrentUser() user: any) {
     return this.ordersService.getMyOrders(user.id);
   }
@@ -41,14 +41,14 @@ export class OrdersController {
   // Admin endpoints
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
-  @Get('all')
+  @Get('admin/all')
   async getAllOrders(@Query('status') status?: string) {
     return this.ordersService.getAllOrders(status);
   }
 
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
-  @Patch(':id/status')
+  @Put(':id/status')
   async updateOrderStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateOrderStatusDto
@@ -58,7 +58,7 @@ export class OrdersController {
 
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
-  @Get('statistics/overview')
+  @Get('admin/statistics')
   async getOrderStatistics() {
     return this.ordersService.getOrderStatistics();
   }

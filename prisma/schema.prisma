@@ -22,11 +22,14 @@ enum OrderStatus {
 
 model User {
   id            Int        @id @default(autoincrement())
+  clerkId       String?    @unique
   email         String     @unique
-  password      String
+  password      String?
   role          Role       @default(client)
   otp           String?
   otpExpiration DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   Profile       Profile?
   Order         Order[]
   Cart          Cart?

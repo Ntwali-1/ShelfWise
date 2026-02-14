@@ -1,4 +1,4 @@
-import { Body, Get, Post, Patch, Delete, UseGuards, Query, Param } from "@nestjs/common";
+import { Body, Get, Post, Patch, Put, Delete, UseGuards, Query, Param } from "@nestjs/common";
 import { Controller } from "@nestjs/common";
 import { ProductService } from "./products.service";
 import { ProductDto } from "./dto/add-product.dto";
@@ -34,7 +34,7 @@ export class ProductController {
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('clerk'), RolesGuard)
   @Post()
   async addProduct(@Body() productDto: ProductDto) {
     return this.productService.addProduct(productDto);
@@ -42,15 +42,15 @@ export class ProductController {
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Patch(':id')
+  @UseGuards(AuthGuard('clerk'), RolesGuard)
+  @Put(':id')
   async updateProduct(@Param('id') id: string, @Body() updateDto: UpdateProductDto) {
     return this.productService.updateProduct(id, updateDto);
   }
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('clerk'), RolesGuard)
   @Patch(':id/stock')
   async updateStock(@Param('id') id: string, @Body() stockDto: UpdateStockDto) {
     return this.productService.updateStock(id, stockDto);
@@ -58,7 +58,7 @@ export class ProductController {
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('clerk'), RolesGuard)
   @Delete(':id')
   async deleteProduct(@Param('id') id: string) {
     return this.productService.deleteProduct(id);

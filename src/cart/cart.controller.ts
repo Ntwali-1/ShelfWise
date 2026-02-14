@@ -7,12 +7,12 @@ import { CurrentUser } from 'src/decorators/user.decorator';
 
 @ApiTags('cart')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('clerk'))
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Post('add')
+  @Post('items')
   async addToCart(@CurrentUser() user: any, @Body() addToCartDto: AddToCartDto) {
     return this.cartService.addToCart(user.id, addToCartDto);
   }
@@ -22,12 +22,17 @@ export class CartController {
     return this.cartService.getCart(user.id);
   }
 
-  @Delete(':itemId')
+  @Delete('items/:itemId')
   async removeFromCart(
     @CurrentUser() user: any,
     @Param('itemId', ParseIntPipe) itemId: number
   ) {
     return this.cartService.removeFromCart(user.id, itemId);
+  }
+
+  @Delete()
+  async clearCart(@CurrentUser() user: any) {
+    return this.cartService.clearCart(user.id);
   }
 }
 

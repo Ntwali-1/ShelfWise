@@ -7,10 +7,12 @@ import { Role } from 'src/rbac/role.enum';
 import { RolesGuard } from 'src/rbac/role.guard';
 import { AuthGuard } from '@nestjs/passport';
 
+import { ClerkAuthGuard } from 'src/auth/clerk-auth.guard';
+
 @ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(private readonly categoriesService: CategoriesService) { }
 
   @Get()
   async getAllCategories() {
@@ -24,7 +26,7 @@ export class CategoriesController {
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('clerk'), RolesGuard)
+  @UseGuards(ClerkAuthGuard, RolesGuard)
   @Post()
   async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.createCategory(createCategoryDto);
@@ -32,7 +34,7 @@ export class CategoriesController {
 
   @ApiBearerAuth()
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard('clerk'), RolesGuard)
+  @UseGuards(ClerkAuthGuard, RolesGuard)
   @Delete(':id')
   async deleteCategory(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.deleteCategory(id);

@@ -4,17 +4,17 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/rbac/role.decorator";
 import { Role } from "src/rbac/role.enum";
 import { RolesGuard } from "src/rbac/role.guard";
-import { AuthGuard } from "@nestjs/passport";
+import { ClerkAuthGuard } from "src/auth/clerk-auth.guard";
 import { CurrentUser } from "src/decorators/user.decorator";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 
 @ApiTags('orders')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('clerk'))
+@UseGuards(ClerkAuthGuard)
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   // Client endpoints
   @Roles(Role.Client)

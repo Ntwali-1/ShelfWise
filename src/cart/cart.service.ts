@@ -4,7 +4,7 @@ import { AddToCartDto } from './dto/add-to-cart.dto';
 
 @Injectable()
 export class CartService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async addToCart(userId: number, addToCartDto: AddToCartDto) {
     // Check if product exists and has sufficient stock
@@ -126,6 +126,38 @@ export class CartService {
     }
 
     return { message: 'Cart cleared successfully' };
+  }
+  async updateCartItem(userId: number, itemId: number, quantity: number) {
+    const cart = await this.prisma.cart.findUnique({
+      where: { userId }
+    });
+
+    if (!cart) {
+      throw new NotFoundException('Cart not found');
+    }
+
+    const cartItem = await this.prisma.cartItem.findFirst({
+      where: {
+        id: itemId,
+        cartId: cart.id
+      },
+      include: { product: true }
+    });
+
+    if (!cartItem) {
+      throw new NotFoundException('Cart item not found');
+    }
+
+    // Check stock availability
+    if (cartItem.product.quantity < quantity) {
+      throw new BadRequestException('Insufficient stock');
+    }
+
+    return this.prisma.cartItem.update({
+      where: { id: itemId },
+      data: { quantity },
+      include: { product: { include: { category: true } } }
+    });
   }
 }
 

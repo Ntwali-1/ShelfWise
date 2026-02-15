@@ -2,16 +2,16 @@ import { Controller, Post, Body, UseGuards, Get, Patch, Put } from "@nestjs/comm
 import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { AuthGuard } from "@nestjs/passport";
+import { ClerkAuthGuard } from 'src/auth/clerk-auth.guard';
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "src/decorators/user.decorator";
 
 @ApiTags('profile')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('clerk'))
+@UseGuards(ClerkAuthGuard)
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   @Post()
   async createProfile(@CurrentUser() user: any, @Body() createProfile: CreateProfileDto) {

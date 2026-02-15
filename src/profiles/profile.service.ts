@@ -6,7 +6,7 @@ import { CreateProfileDto } from "./dto/create-profile.dto";
 
 @Injectable()
 export class ProfileService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createProfile(createProfileDto: CreateProfileDto, userId: number) {
     const profile = await this.prisma.profile.create({
@@ -29,7 +29,14 @@ export class ProfileService {
 
   async getProfile(userId: number) {
     return this.prisma.profile.findUnique({
-      where: { userId: userId }
+      where: { userId: userId },
+      include: {
+        user: {
+          select: {
+            email: true
+          }
+        }
+      }
     });
   }
 

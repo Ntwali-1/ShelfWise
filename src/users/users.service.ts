@@ -70,7 +70,6 @@ export class UsersService {
     const token = this.jwt.sign(payload);
     return { token };
   }
-}
 
   async selectRole(userId: number, selectRoleDto: SelectRoleDto) {
     const user = await this.prisma.user.findUnique({
@@ -118,3 +117,4 @@ export class UsersService {
 
     return user;
   }
+}

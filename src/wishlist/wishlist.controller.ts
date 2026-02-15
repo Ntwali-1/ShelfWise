@@ -1,15 +1,15 @@
 import { Controller, Post, Get, Delete, UseGuards, Param, Body } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { WishlistService } from './wishlist.service';
-import { AuthGuard } from '@nestjs/passport';
+import { ClerkAuthGuard } from 'src/auth/clerk-auth.guard';
 import { CurrentUser } from 'src/decorators/user.decorator';
 
 @ApiTags('wishlist')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('clerk'))
+@UseGuards(ClerkAuthGuard)
 @Controller('wishlist')
 export class WishlistController {
-  constructor(private readonly wishlistService: WishlistService) {}
+  constructor(private readonly wishlistService: WishlistService) { }
 
   @Post()
   async addToWishlist(@CurrentUser() user: any, @Body('productId') productId: string) {

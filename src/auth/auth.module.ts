@@ -6,10 +6,12 @@ import { ClerkStrategy } from './clerk.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaService } from '../prisma/prisma.service';
 
+import { ClerkAuthGuard } from './clerk-auth.guard';
+
 @Module({
   imports: [
     PassportModule,
-    ConfigModule.forRoot({ isGlobal: true }), 
+    ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -19,7 +21,7 @@ import { PrismaService } from '../prisma/prisma.service';
       }),
     }),
   ],
-  providers: [JwtStrategy, ClerkStrategy, PrismaService],
-  exports: [JwtStrategy, ClerkStrategy],
+  providers: [JwtStrategy, ClerkStrategy, PrismaService, ClerkAuthGuard],
+  exports: [JwtStrategy, ClerkStrategy, ClerkAuthGuard],
 })
-export class AuthModule {}
+export class AuthModule { }

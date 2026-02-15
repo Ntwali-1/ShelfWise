@@ -1,17 +1,18 @@
 import { Body, Controller, Post, Get, Put, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { LoginUserDto } from "./dto/login-user.dto";  
+import { LoginUserDto } from "./dto/login-user.dto";
 import { VerifyUserDto } from "./dto/verify-user.dto";
 import { SelectRoleDto } from "./dto/select-role.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { CurrentUser } from "src/decorators/user.decorator";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ClerkAuthGuard } from 'src/auth/clerk-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post('signup')
   async createUser(@Body() createUserDto: CreateUserDto) {
@@ -29,14 +30,14 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('clerk'))
+  @UseGuards(ClerkAuthGuard)
   @Put('select-role')
   async selectRole(@CurrentUser() user: any, @Body() selectRoleDto: SelectRoleDto) {
     return this.usersService.selectRole(user.id, selectRoleDto);
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('clerk'))
+  @UseGuards(ClerkAuthGuard)
   @Get('me')
   async getCurrentUser(@CurrentUser() user: any) {
     return this.usersService.getCurrentUser(user.id);

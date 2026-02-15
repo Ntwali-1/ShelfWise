@@ -4,15 +4,16 @@ import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ClerkAuthGuard } from 'src/auth/clerk-auth.guard';
 import { CurrentUser } from 'src/decorators/user.decorator';
 
 @ApiTags('reviews')
 @Controller('reviews')
 export class ReviewsController {
-  constructor(private readonly reviewsService: ReviewsService) {}
+  constructor(private readonly reviewsService: ReviewsService) { }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('clerk'))
+  @UseGuards(ClerkAuthGuard)
   @Post('products/:productId')
   async createReview(
     @CurrentUser() user: any,
@@ -28,7 +29,7 @@ export class ReviewsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('clerk'))
+  @UseGuards(ClerkAuthGuard)
   @Put(':reviewId')
   async updateReview(
     @CurrentUser() user: any,
@@ -39,7 +40,7 @@ export class ReviewsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('clerk'))
+  @UseGuards(ClerkAuthGuard)
   @Delete(':reviewId')
   async deleteReview(
     @CurrentUser() user: any,

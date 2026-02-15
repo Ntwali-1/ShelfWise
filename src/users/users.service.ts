@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { MailerService } from "src/mailer/mailer.service";
+import { SelectRoleDto } from "./dto/select-role.dto";
 
 @Injectable()
 export class UsersService {
@@ -70,3 +71,50 @@ export class UsersService {
     return { token };
   }
 }
+
+  async selectRole(userId: number, selectRoleDto: SelectRoleDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    // Update user role
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { role: selectRoleDto.role },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        clerkId: true,
+      }
+    });
+
+    return {
+      message: "Role updated successfully",
+      user: updatedUser
+    };
+  }
+
+  async getCurrentUser(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        clerkId: true,
+        createdAt: true,
+        Profile: true,
+      }
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    return user;
+  }

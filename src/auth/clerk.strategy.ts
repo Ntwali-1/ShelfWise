@@ -52,12 +52,12 @@ export class ClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
       });
 
       if (!user) {
-        // Create user if doesn't exist
+        // Create user without role - they'll select it later
         user = await this.prisma.user.create({
           data: {
             clerkId: clerkUserId,
             email: email,
-            role: 'client',
+            // No default role - user must select
           } as any,
           include: { Profile: true },
         });

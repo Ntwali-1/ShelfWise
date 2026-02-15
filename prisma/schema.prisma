@@ -25,7 +25,7 @@ model User {
   clerkId       String?    @unique
   email         String     @unique
   password      String?
-  role          Role       @default(client)
+  role          Role?
   otp           String?
   otpExpiration DateTime?
   createdAt     DateTime   @default(now())

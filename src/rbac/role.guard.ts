@@ -1,5 +1,5 @@
 
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from './role.enum';
 import { ROLES_KEY } from './role.decorator';
@@ -13,10 +13,28 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+    
     if (!requiredRoles) {
       return true;
     }
+    
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    
+    if (!user.role) {
+      throw new ForbiddenException('User role not set. Please select a role first.');
+    }
+    
+    // Check if user's role matches any of the required roles
+    const hasRole = requiredRoles.some((role) => user.role === role);
+    
+    if (!hasRole) {
+      throw new ForbiddenException(`Access denied. Required role: ${requiredRoles.join(' or ')}`);
+    }
+    
+    return true;
   }
 }

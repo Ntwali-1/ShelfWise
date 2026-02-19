@@ -19,9 +19,10 @@ export class ClerkAuthGuard implements CanActivate {
         }
 
         try {
-            // Verify Clerk token directly using Clerk SDK
+            // Verify Clerk token directly using Clerk SDK with clock skew tolerance
             const clerkPayload = await verifyToken(token, {
                 secretKey: this.config.get<string>('CLERK_SECRET_KEY')!,
+                clockSkewInMs: 300000, // Allow 5 minutes of clock skew
             });
 
             const clerkId = clerkPayload.sub;

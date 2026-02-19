@@ -25,6 +25,7 @@ export class ProductDto {
   @IsNotEmpty()
   sku: string;
 
-  @ApiProperty({ example: 'https://example.com/images/smart-watch.jpg' } )
-  imageUrl: string;
+  @ApiProperty({ example: 'https://example.com/images/smart-watch.jpg', required: false } )
+  @IsOptional()
+  imageUrl?: string;
 }

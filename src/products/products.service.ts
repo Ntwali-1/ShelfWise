@@ -108,6 +108,15 @@ export class ProductService {
   }
 
   async addProduct(productDto: any) {
+    // Check if product with same SKU already exists
+    const existingProduct = await this.prisma.product.findUnique({
+      where: { sku: productDto.sku }
+    });
+
+    if (existingProduct) {
+      throw new BadRequestException(`Product with SKU '${productDto.sku}' already exists`);
+    }
+
     const newProduct = {
       id: Math.random().toString(36).substring(2, 15),
       name: productDto.name,

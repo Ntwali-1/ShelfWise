@@ -28,7 +28,7 @@ export class ProfileService {
   }
 
   async getProfile(userId: number) {
-    return this.prisma.profile.findUnique({
+    const profile = await this.prisma.profile.findUnique({
       where: { userId: userId },
       include: {
         user: {
@@ -38,18 +38,37 @@ export class ProfileService {
         }
       }
     });
+    
+    // Return empty object instead of null if profile doesn't exist
+    if (!profile) {
+      return null;
+    }
+    
+    return profile;
   }
 
   async updateProfile(data: Partial<CreateProfileDto>, userId: number) {
-    return this.prisma.profile.update({
+    // Use upsert to handle both create and update cases
+    return this.prisma.profile.upsert({
       where: { userId: userId },
-      data: {
+      update: {
         firstName: data.firstName,
         lastName: data.lastName,
         birthday: data?.birthday ? new Date(data.birthday) : undefined,
         bio: data.bio,
         address: data.address,
         phoneNumber: data.phoneNumber,
+      },
+      create: {
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        birthday: data?.birthday ? new Date(data.birthday) : undefined,
+        bio: data.bio ?? null,
+        address: data.address ?? null,
+        phoneNumber: data.phoneNumber ?? null,
+        user: {
+          connect: { id: userId },
+        },
       },
     });
   }

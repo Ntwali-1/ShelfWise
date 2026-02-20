@@ -14,13 +14,38 @@ const clerkClient = createClerkClient({
 async function main() {
     console.log('Starting cleanup process...');
 
-    // 1. Delete all users from local database
+    // 1. Delete all data from local database (in correct order due to foreign keys)
     try {
-        console.log('Deleting users from local database...');
+        console.log('Deleting data from local database...');
+        
+        // Delete in order: child tables first, then parent tables
+        const deleteReviews = await prisma.review.deleteMany();
+        console.log(`Deleted ${deleteReviews.count} reviews.`);
+        
+        const deleteOrderItems = await prisma.orderItem.deleteMany();
+        console.log(`Deleted ${deleteOrderItems.count} order items.`);
+        
+        const deleteOrders = await prisma.order.deleteMany();
+        console.log(`Deleted ${deleteOrders.count} orders.`);
+        
+        const deleteCartItems = await prisma.cartItem.deleteMany();
+        console.log(`Deleted ${deleteCartItems.count} cart items.`);
+        
+        const deleteCarts = await prisma.cart.deleteMany();
+        console.log(`Deleted ${deleteCarts.count} carts.`);
+        
+        const deleteWishlists = await prisma.wishlist.deleteMany();
+        console.log(`Deleted ${deleteWishlists.count} wishlist items.`);
+        
+        const deleteProfiles = await prisma.profile.deleteMany();
+        console.log(`Deleted ${deleteProfiles.count} profiles.`);
+        
         const deleteUsers = await prisma.user.deleteMany();
-        console.log(`Deleted ${deleteUsers.count} users from local database.`);
+        console.log(`Deleted ${deleteUsers.count} users.`);
+        
+        console.log('Local database cleanup complete.');
     } catch (error) {
-        console.error('Error deleting users from local database:', error);
+        console.error('Error deleting data from local database:', error);
     }
 
     // 2. Delete all users from Clerk

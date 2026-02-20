@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function setAdminRole() {
-  // Get email from command line argument or use a default
   const email = process.argv[2];
 
   if (!email) {
@@ -13,7 +12,7 @@ async function setAdminRole() {
   }
 
   try {
-    // Find user by email
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -26,7 +25,6 @@ async function setAdminRole() {
     console.log(`Found user: ${user.email} (ID: ${user.id})`);
     console.log(`Current role: ${user.role || 'NOT SET'}`);
 
-    // Update user role to admin
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: { role: 'admin' },
